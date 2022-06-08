@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: python static checks and tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  testing:
+    runs-on: ubuntu-18.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v1
+
+      # Runs a single command using the runners shell
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6.9
+          architecture: x64
+          
+      - name: Install Flake8
+        run: pip install flake8
+      - name: Run Flake8
+        run: flake8
+
+
+      - name: Install Pylint
+        run: pip install Pylint
+      - name: Run Pylint
+        run: find . -name "*.py" | xargs pylint --output-format=colorized
+        
+        
+      - name: Install Black
+        run: pip install Black
+      - name: Run Black
+        run: find . -name "*.py" | xargs black --check
+        
+      - name: Install dependencies
+        run: pip install apache-airflow pytest
+        
+      - name: Test DAG integrity
+        run: pytest tests/        
+        
